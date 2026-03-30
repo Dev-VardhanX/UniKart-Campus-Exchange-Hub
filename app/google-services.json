@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "966637562135",
+    "project_id": "unikart-campusexchangehub",
+    "storage_bucket": "unikart-campusexchangehub.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966637562135:android:4a9713f2fe01f87d992f52",
+        "android_client_info": {
+          "package_name": "com.example.unikart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsn3WCl3s79wzsGUF4bGBdmS1B3Ew9EPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

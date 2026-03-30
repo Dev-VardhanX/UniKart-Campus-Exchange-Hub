@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.prototype"
+    namespace = "com.example.unikart"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.prototype"
+        applicationId = "com.example.unikart"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -86,4 +86,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }
