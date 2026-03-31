@@ -10,4 +10,12 @@ interface ItemRepository {
     fun getItems(): Flow<List<Item>>
 
     suspend fun getItemById(id: String): Item?
+
+    suspend fun addToFavorites(userId: String, itemId: String)
+
+    suspend fun removeFromFavorites(userId: String, itemId: String)
+
+    fun getFavorites(userId: String): Flow<List<String>>
+
+
 }

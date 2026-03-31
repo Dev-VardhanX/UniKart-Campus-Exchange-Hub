@@ -1,11 +1,13 @@
 package com.example.unikart.presentation.additem
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.unikart.data.model.Item
+import com.example.unikart.data.repository.StorageRepository
 import com.example.unikart.domain.usecase.AddItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddItemViewModel @Inject constructor(
-    private val addItemUseCase: AddItemUseCase
+    private val addItemUseCase: AddItemUseCase,
+    private val storageRepository: StorageRepository
 ) : ViewModel() {
 
     var isLoading by mutableStateOf(false)
@@ -22,18 +25,38 @@ class AddItemViewModel @Inject constructor(
     var isSuccess by mutableStateOf(false)
         private set
 
-    fun addItem(item: Item) {
+    fun addItem(item: Item, imageUri : Uri?) {
+//        viewModelScope.launch {
+//            isLoading = true
+//            val result = addItemUseCase(item)
+//            result.onSuccess {
+//                isSuccess = true
+//            }.onFailure {
+//                it.printStackTrace()
+//            }
+//
+//            isLoading = false
+//
+//        }
         viewModelScope.launch {
             isLoading = true
-            val result = addItemUseCase(item)
-            result.onSuccess {
+            try {
+
+                val imageUrl = imageUri?.let {
+                    storageRepository.uploadImage(it)
+                } ?: ""
+
+                val updatedItem = item.copy(imageUrl = imageUrl)
+
+                addItemUseCase(updatedItem)
+
                 isSuccess = true
-            }.onFailure {
-                it.printStackTrace()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isLoading = false
             }
-
-            isLoading = false
-
         }
     }
 }

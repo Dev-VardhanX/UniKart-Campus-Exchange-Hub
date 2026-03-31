@@ -26,6 +26,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.unikart.data.model.Item
 import com.google.firebase.auth.FirebaseAuth
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun AddItemScreen(
@@ -38,15 +43,23 @@ fun AddItemScreen(
     var category by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     val selectedTypes = remember { mutableStateListOf<String>() }
 
     val isLoading = viewModel.isLoading
     val isSuccess = viewModel.isSuccess
 
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        imageUri = uri
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
 
@@ -122,6 +135,13 @@ fun AddItemScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        Button(onClick = {
+            launcher.launch("image/*")
+        }) {
+            Text("Pick Image")
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = {
@@ -144,11 +164,11 @@ fun AddItemScreen(
                     }
 
                     item?.let {
-                        viewModel.addItem(it)
+                        viewModel.addItem(it, imageUri)
                     }
                 }
             },
-            enabled = !isLoading,   // 🔥 THIS LINE
+            enabled = !isLoading,
             modifier = Modifier.fillMaxWidth()
         )
         {

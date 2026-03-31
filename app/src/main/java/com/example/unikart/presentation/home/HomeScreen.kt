@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.unikart.presentation.components.ItemCard
 import com.example.unikart.presentation.navigation.Screen
+import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
@@ -54,8 +55,16 @@ fun HomeScreen(
         ) {
 
             items(items) { item ->
+
                 ItemCard(
                     item = item,
+                    isFavorite = viewModel.favoriteIds.contains(item.id),
+                    onFavoriteClick = {
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+                            ?: return@ItemCard
+
+                        viewModel.toggleFavorite(userId, item.id)
+                    },
                     onClick = {
                         navController.navigate(
                             Screen.ItemDetails.createRoute(item.id)
