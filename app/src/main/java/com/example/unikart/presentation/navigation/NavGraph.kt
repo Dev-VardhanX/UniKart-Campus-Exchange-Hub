@@ -28,9 +28,7 @@ fun NavGraph(
             SignupScreen(navController)
         }
         composable("main") {
-            MainScreen(
-                navController = TODO()
-            )
+            MainScreen()
         }
     }
 }
