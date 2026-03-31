@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddItemViewModel @Inject constructor(
     private val addItemUseCase: AddItemUseCase,
-    private val storageRepository: StorageRepository
+   // private val storageRepository: StorageRepository
 ) : ViewModel() {
 
     var isLoading by mutableStateOf(false)
@@ -25,30 +25,18 @@ class AddItemViewModel @Inject constructor(
     var isSuccess by mutableStateOf(false)
         private set
 
-    fun addItem(item: Item, imageUri : Uri?) {
-//        viewModelScope.launch {
-//            isLoading = true
-//            val result = addItemUseCase(item)
-//            result.onSuccess {
-//                isSuccess = true
-//            }.onFailure {
-//                it.printStackTrace()
-//            }
-//
-//            isLoading = false
-//
-//        }
+    fun addItem(item: Item) {
         viewModelScope.launch {
             isLoading = true
             try {
 
-                val imageUrl = imageUri?.let {
-                    storageRepository.uploadImage(it)
-                } ?: ""
+//                val imageUrl = imageUri?.let {
+//                    storageRepository.uploadImage(it)
+//                } ?: ""
+//
+//                val updatedItem = item.copy(imageUrl = imageUrl)
 
-                val updatedItem = item.copy(imageUrl = imageUrl)
-
-                addItemUseCase(updatedItem)
+                addItemUseCase(item)
 
                 isSuccess = true
 

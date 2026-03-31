@@ -17,8 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.example.unikart.data.model.Item
+import coil.compose.AsyncImage
 
 @Composable
 fun ItemCard(
@@ -37,7 +37,7 @@ fun ItemCard(
 
             AsyncImage(
                 model = item.imageUrl,
-                contentDescription = null,
+                contentDescription = item.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)

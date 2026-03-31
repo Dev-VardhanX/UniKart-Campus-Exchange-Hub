@@ -43,18 +43,18 @@ fun AddItemScreen(
     var category by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+   // var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     val selectedTypes = remember { mutableStateListOf<String>() }
 
     val isLoading = viewModel.isLoading
     val isSuccess = viewModel.isSuccess
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imageUri = uri
-    }
+//    val launcher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) { uri: Uri? ->
+//        imageUri = uri
+//    }
 
     Column(
         modifier = Modifier
@@ -135,11 +135,11 @@ fun AddItemScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = {
-            launcher.launch("image/*")
-        }) {
-            Text("Pick Image")
-        }
+//        Button(onClick = {
+//            //launcher.launch("image/*")
+//        }) {
+//            Text("Pick Image")
+//        }
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -155,7 +155,7 @@ fun AddItemScreen(
                             category = category,
                             types = selectedTypes.toList(),
                             description = description,
-                            imageUrl = "",
+                            imageUrl = "https://picsum.photos/200",
                             location = location,
                             userId = it.uid,
                             userName = it.displayName ?: "Unknown",
@@ -164,7 +164,8 @@ fun AddItemScreen(
                     }
 
                     item?.let {
-                        viewModel.addItem(it, imageUri)
+                 //       viewModel.addItem(it, imageUri)
+                        viewModel.addItem(it)
                     }
                 }
             },
