@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import com.example.unikart.presentation.components.ItemCard
 import com.example.unikart.presentation.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.runtime.LaunchedEffect
 
 
 @Composable
@@ -30,6 +31,14 @@ fun HomeScreen(
 ) {
 
     val items by viewModel.items.collectAsState()
+
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+    LaunchedEffect(Unit) {
+        userId?.let {
+            viewModel.loadFavorites(it)
+        }
+    }
 
     Column(
         modifier = Modifier

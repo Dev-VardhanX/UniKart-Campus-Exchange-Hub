@@ -50,6 +50,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    val favoriteItems: List<Item>
+        get() = _items.value.filter { item ->
+            favoriteIds.contains(item.id)
+        }
+
     fun toggleFavorite(userId: String, itemId: String) {
         viewModelScope.launch {
             if (favoriteIds.contains(itemId)) {

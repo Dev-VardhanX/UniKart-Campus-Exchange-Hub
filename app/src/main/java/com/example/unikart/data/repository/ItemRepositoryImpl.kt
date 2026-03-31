@@ -63,8 +63,10 @@ class ItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addToFavorites(userId: String, itemId: String) {
+        val docId = "${userId}_$itemId"
         firestore.collection("favorites")
-            .add(
+            .document(docId)
+            .set(
                 mapOf(
                     "userId" to userId,
                     "itemId" to itemId
@@ -72,16 +74,14 @@ class ItemRepositoryImpl @Inject constructor(
             ).await()
     }
 
-    override suspend fun removeFromFavorites(userId: String, itemId: String) {
-        val snapshot = firestore.collection("favorites")
-            .whereEqualTo("userId", userId)
-            .whereEqualTo("itemId", itemId)
-            .get()
-            .await()
 
-        snapshot.documents.forEach {
-            it.reference.delete()
-        }
+    override suspend fun removeFromFavorites(userId: String, itemId: String) {
+        val docId = "${userId}_${itemId}"
+
+        firestore.collection("favorites")
+            .document(docId)
+            .delete()
+            .await()
     }
 
     override fun getFavorites(userId: String): Flow<List<String>> = callbackFlow {
