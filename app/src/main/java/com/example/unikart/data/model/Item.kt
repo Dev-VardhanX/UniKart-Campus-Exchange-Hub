@@ -1,6 +1,5 @@
 package com.example.unikart.data.model
 
-
 data class Item(
     val id: String = "",
     val title: String = "",

@@ -1,9 +1,89 @@
 package com.example.unikart.presentation.main
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.unikart.presentation.Account.AccountScreen
+import com.example.unikart.presentation.additem.AddItemScreen
+import com.example.unikart.presentation.components.BottomNavBar
+import com.example.unikart.presentation.detail.ItemDetailsScreen
+import com.example.unikart.presentation.explore.ExploreScreen
+import com.example.unikart.presentation.favourites.FavouritesScreen
+import com.example.unikart.presentation.home.HomeScreen
+import com.example.unikart.presentation.navigation.Screen
 
 @Composable
-fun MainScreen(){
+fun MainScreen() {
 
+    val navController = rememberNavController()
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry.value?.destination?.route
+
+    Scaffold(
+        bottomBar = {
+            BottomNavBar(navController)
+        },
+
+        floatingActionButton = {
+            if (currentRoute == Screen.Home.route) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Screen.AddItem.route)
+                    },
+                    modifier = Modifier.padding(bottom = 72.dp),
+                    shape = RoundedCornerShape(70.dp),
+                    containerColor = Color(0xFFC19DE7),
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Item")
+                }
+            }
+        }
+
+    ) { padding ->
+
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(padding)
+        ) {
+            composable(Screen.Home.route) {
+                HomeScreen(navController)
+            }
+            composable(Screen.Explore.route) {
+                ExploreScreen(navController)
+            }
+            composable(Screen.Favourites.route) {
+                FavouritesScreen(navController)
+            }
+            composable(Screen.Account.route) {
+                AccountScreen(navController)
+            }
+            composable(Screen.AddItem.route) {
+                AddItemScreen(navController)
+            }
+            composable(
+                route = Screen.ItemDetails.route
+            ) { backStackEntry ->
+
+                val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+
+                ItemDetailsScreen(
+                    navController = navController,
+                    itemId = itemId
+                )
+            }
+        }
+    }
 }

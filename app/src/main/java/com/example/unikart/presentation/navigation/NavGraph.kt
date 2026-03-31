@@ -20,7 +20,7 @@ fun NavGraph(
         Screen.Login.route
     }
     NavHost(navController = navController, startDestination = start) {
-        // AUTH GRAPH
+
         composable(Screen.Login.route) {
             LoginScreen(navController)
         }
