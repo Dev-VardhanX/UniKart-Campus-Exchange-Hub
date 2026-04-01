@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -25,7 +27,9 @@ import com.example.unikart.presentation.home.HomeScreen
 import com.example.unikart.presentation.navigation.Screen
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    rootNController: NavHostController
+) {
 
     val navController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -68,7 +72,7 @@ fun MainScreen() {
                 FavouritesScreen(navController)
             }
             composable(Screen.Account.route) {
-                AccountScreen(navController)
+                AccountScreen(rootNController)
             }
             composable(Screen.AddItem.route) {
                 AddItemScreen(navController)

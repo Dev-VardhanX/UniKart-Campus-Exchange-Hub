@@ -28,7 +28,7 @@ fun NavGraph(
             SignupScreen(navController)
         }
         composable("main") {
-            MainScreen()
+            MainScreen(navController)
         }
     }
 }
