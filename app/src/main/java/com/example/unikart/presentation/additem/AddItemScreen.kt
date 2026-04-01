@@ -95,6 +95,13 @@ fun AddItemScreen(
             onValueChange = { location = it },
             label = { Text("Location") }
         )
+        var phone by remember { mutableStateOf("") }
+
+        OutlinedTextField(
+            value = phone,
+            onValueChange = { phone = it },
+            label = { Text("Phone Number (WhatsApp)") }
+        )
 
         OutlinedTextField(
             value = description,
@@ -150,7 +157,7 @@ fun AddItemScreen(
 
         Button(
             onClick = {
-                if (title.isNotBlank() && price.isNotBlank()) {
+                if (title.isNotBlank() && price.isNotBlank() && phone.length == 10) {
                     val currentUser = FirebaseAuth.getInstance().currentUser
 
                     val item = currentUser?.let {
@@ -164,12 +171,12 @@ fun AddItemScreen(
                             location = location,
                             userId = it.uid,
                             userName = it.displayName ?: "Unknown",
-                            userEmail = it.email ?: ""
+                            userEmail = it.email ?: "",
+                            userPhone = "91$phone"
                         )
                     }
 
                     item?.let {
-                 //       viewModel.addItem(it, imageUri)
                         viewModel.addItem(item, imageUri, context)
                     }
                 }
@@ -190,6 +197,7 @@ fun AddItemScreen(
                 category = ""
                 description = ""
                 location = ""
+                phone = ""
                 selectedTypes.clear()
                 navController.popBackStack()
             }

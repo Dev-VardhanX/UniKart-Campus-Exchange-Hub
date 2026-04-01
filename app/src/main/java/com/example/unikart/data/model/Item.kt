@@ -12,5 +12,6 @@ data class Item(
     val userId: String = "",
     val userName: String = "",
     val userEmail: String = "",
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val userPhone: String = ""
 )
