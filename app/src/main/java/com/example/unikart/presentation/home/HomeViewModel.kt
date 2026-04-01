@@ -27,17 +27,50 @@ class HomeViewModel @Inject constructor(
     private val _items = MutableStateFlow<List<Item>>(emptyList())
     val items: StateFlow<List<Item>> = _items
 
+    var searchQuery by mutableStateOf("")
+        private set
+
+    var selectedCategory by mutableStateOf("")
+        private set
+
+    var selectedType by mutableStateOf("")
+        private set
+
     init {
         fetchItems()
     }
 
+//    private fun fetchItems() {
+//        viewModelScope.launch {
+//            getItemsUseCase().collect { itemList ->
+//                _items.value = itemList
+//            }
+//        }
+//    }
     private fun fetchItems() {
         viewModelScope.launch {
             getItemsUseCase().collect { itemList ->
-                _items.value = itemList
+                val filtered = itemList.filter { item ->
+                    val matchesSearch =
+                        item.title.contains(searchQuery, ignoreCase = true)
+
+                    val matchesCategory =
+                        selectedCategory.isBlank() || item.category == selectedCategory
+
+                    val matchesType =
+                        selectedType.isBlank() || item.types.contains(selectedType)
+
+                    matchesSearch && matchesCategory && matchesType
+                }
+
+                _items.value = filtered
             }
         }
     }
+
+
+
+
 
     var favoriteIds by mutableStateOf<List<String>>(emptyList())
         private set
@@ -64,4 +97,33 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+//    fun onSearchChange(query: String) {
+//        searchQuery = query
+//    }
+//
+//    fun onCategoryChange(category: String) {
+//        selectedCategory = category
+//    }
+//
+//    fun onTypeChange(type: String) {
+//        selectedType = type
+//    }
+
+    fun onSearchChange(query: String) {
+        searchQuery = query
+        fetchItems()
+    }
+
+    fun onCategoryChange(category: String) {
+        selectedCategory = category
+        fetchItems()
+    }
+
+    fun onTypeChange(type: String) {
+        selectedType = type
+        fetchItems()
+    }
 }
+
+
