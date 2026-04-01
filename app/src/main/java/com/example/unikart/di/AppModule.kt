@@ -1,7 +1,9 @@
 package com.example.unikart.di
 
 import android.app.Application
+import com.example.unikart.data.remote.CloudinaryApi
 import com.example.unikart.data.repository.AuthRepositoryImpl
+import com.example.unikart.data.repository.CloudinaryRepository
 import com.example.unikart.data.repository.ItemRepositoryImpl
 import com.example.unikart.domain.repository.AuthRepository
 import com.example.unikart.domain.repository.ItemRepository
@@ -102,5 +104,13 @@ object AppModule{
     @Singleton
     fun provideFirebaseStorage(): FirebaseStorage {
         return FirebaseStorage.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCloudinaryRepository(
+        api: CloudinaryApi
+    ): CloudinaryRepository {
+        return CloudinaryRepository(api)
     }
 }
