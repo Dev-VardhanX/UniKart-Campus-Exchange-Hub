@@ -36,31 +36,40 @@ class HomeViewModel @Inject constructor(
     var selectedType by mutableStateOf("")
         private set
 
+    var minPrice by mutableStateOf(0f)
+        private set
+
+    var maxPrice by mutableStateOf(10000f)
+        private set
+
     init {
         fetchItems()
     }
 
-//    private fun fetchItems() {
-//        viewModelScope.launch {
-//            getItemsUseCase().collect { itemList ->
-//                _items.value = itemList
-//            }
-//        }
-//    }
+    fun onPriceChange(min: Float, max: Float) {
+        minPrice = min
+        maxPrice = max
+        fetchItems()
+    }
+
     private fun fetchItems() {
         viewModelScope.launch {
             getItemsUseCase().collect { itemList ->
+
                 val filtered = itemList.filter { item ->
-                    val matchesSearch =
-                        item.title.contains(searchQuery, ignoreCase = true)
+
+                    val matchesSearch = item.title.contains(searchQuery, true)
 
                     val matchesCategory =
-                        selectedCategory.isBlank() || item.category == selectedCategory
+                        selectedCategory.isEmpty() || item.category == selectedCategory
 
                     val matchesType =
-                        selectedType.isBlank() || item.types.contains(selectedType)
+                        selectedType.isEmpty() || item.types.contains(selectedType)
 
-                    matchesSearch && matchesCategory && matchesType
+                    val price = item.price.toFloatOrNull() ?: 0f
+                    val matchesPrice = price in minPrice..maxPrice
+
+                    matchesSearch && matchesCategory && matchesType && matchesPrice
                 }
 
                 _items.value = filtered
