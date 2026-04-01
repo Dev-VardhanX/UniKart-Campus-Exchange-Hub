@@ -100,4 +100,25 @@ class ItemRepositoryImpl @Inject constructor(
         awaitClose { listener.remove() }
     }
 
+    override fun getItemsByUser(userId: String): Flow<List<Item>> = callbackFlow {
+
+        val listener = firestore.collection("items")
+            .whereEqualTo("userId", userId)
+            .addSnapshotListener { snapshot, error ->
+
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                val items = snapshot?.documents?.mapNotNull {
+                    it.toObject(Item::class.java)?.copy(id = it.id)
+                } ?: emptyList()
+
+                trySend(items)
+            }
+
+        awaitClose { listener.remove() }
+    }
+
 }

@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun AccountScreen(
     navController: NavHostController,
+    rootNavController: NavController,
     viewModel: AccountViewModel = hiltViewModel()
 ) {
 
@@ -71,7 +72,7 @@ fun AccountScreen(
 
         Button(
             onClick = {
-
+                navController.navigate("my_listings")
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -83,7 +84,7 @@ fun AccountScreen(
         Button(
             onClick = {
                 viewModel.logout()
-                navController.navigate("login") {
+                rootNavController.navigate("login") {
                     popUpTo(navController.graph.startDestinationId){inclusive = true}
                 }
             },

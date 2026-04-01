@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.unikart.presentation.Account.AccountScreen
+import com.example.unikart.presentation.Account.MyListingsScreen
 import com.example.unikart.presentation.additem.AddItemScreen
 import com.example.unikart.presentation.components.BottomNavBar
 import com.example.unikart.presentation.detail.ItemDetailsScreen
@@ -72,7 +73,10 @@ fun MainScreen(
                 FavouritesScreen(navController)
             }
             composable(Screen.Account.route) {
-                AccountScreen(rootNController)
+                AccountScreen(
+                    navController = navController,
+                    rootNavController = rootNController
+                )
             }
             composable(Screen.AddItem.route) {
                 AddItemScreen(navController)
@@ -87,6 +91,9 @@ fun MainScreen(
                     navController = navController,
                     itemId = itemId
                 )
+            }
+            composable(Screen.MyListings.route) {
+                MyListingsScreen(navController)
             }
         }
     }

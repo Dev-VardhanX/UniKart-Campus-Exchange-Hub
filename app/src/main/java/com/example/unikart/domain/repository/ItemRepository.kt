@@ -17,5 +17,6 @@ interface ItemRepository {
 
     fun getFavorites(userId: String): Flow<List<String>>
 
+    fun getItemsByUser(userId: String): Flow<List<Item>>
 
 }
