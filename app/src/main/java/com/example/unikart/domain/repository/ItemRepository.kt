@@ -19,4 +19,7 @@ interface ItemRepository {
 
     fun getItemsByUser(userId: String): Flow<List<Item>>
 
+    suspend fun updateItem(item: Item)
+
+    suspend fun deleteItem(itemId: String)
 }

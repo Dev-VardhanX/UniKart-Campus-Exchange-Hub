@@ -59,7 +59,6 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    // ✅ Correct: delegate to GoogleAuthUIClient
     suspend fun getGoogleSignInIntent() = googleAuthClient.getSignInIntent()
 
     fun handleGoogleSignInResult(intent: Intent) {

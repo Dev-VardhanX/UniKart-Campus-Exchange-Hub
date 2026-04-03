@@ -4,10 +4,10 @@ import com.example.unikart.data.model.Item
 import com.example.unikart.domain.repository.ItemRepository
 import javax.inject.Inject
 
-class GetItemUseCase @Inject constructor(
+class UpdateItemUseCase @Inject constructor(
     private val repository: ItemRepository
 ) {
-    suspend operator fun invoke(itemId: String): Item? {
-        return repository.getItemById(itemId)
+    suspend operator fun invoke(item: Item) {
+        repository.updateItem(item)
     }
 }

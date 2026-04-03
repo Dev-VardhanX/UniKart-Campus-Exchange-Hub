@@ -13,5 +13,6 @@ data class Item(
     val userName: String = "",
     val userEmail: String = "",
     val timestamp: Long = System.currentTimeMillis(),
-    val userPhone: String = ""
+    val userPhone: String = "",
+    val isSold: Boolean = false
 )

@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -94,6 +93,17 @@ fun MainScreen(
             }
             composable(Screen.MyListings.route) {
                 MyListingsScreen(navController)
+            }
+            composable(
+                route = Screen.EditItem.route
+            ) { backStackEntry ->
+
+                val itemId = backStackEntry.arguments?.getString("itemId")
+
+                AddItemScreen(
+                    navController = navController,
+                    itemId = itemId
+                )
             }
         }
     }

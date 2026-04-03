@@ -136,25 +136,6 @@ fun ExploreScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
 
-//        LazyVerticalGrid(
-//            columns = GridCells.Fixed(2)
-//        ) {
-//            items(items) { item ->
-//                ItemCard(
-//                    item = item,
-//                    isFavorite = viewModel.favoriteIds.contains(item.id),
-//                    onFavoriteClick = {
-//                        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@ItemCard
-//                        viewModel.toggleFavorite(userId, item.id)
-//                    },
-//                    onClick = {
-//                        navController.navigate(
-//                            Screen.ItemDetails.createRoute(item.id)
-//                        )
-//                    }
-//                )
-//            }
-//        }
         if (items.isEmpty()) {
 
             Column(

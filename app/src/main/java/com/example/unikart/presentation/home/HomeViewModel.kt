@@ -107,18 +107,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-//    fun onSearchChange(query: String) {
-//        searchQuery = query
-//    }
-//
-//    fun onCategoryChange(category: String) {
-//        selectedCategory = category
-//    }
-//
-//    fun onTypeChange(type: String) {
-//        selectedType = type
-//    }
-
     fun onSearchChange(query: String) {
         searchQuery = query
         fetchItems()

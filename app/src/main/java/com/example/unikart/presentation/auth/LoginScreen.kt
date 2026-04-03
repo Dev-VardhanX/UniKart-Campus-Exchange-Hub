@@ -76,7 +76,6 @@ fun LoginScreen(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-//            val intent = result.data
             result.data?.let { intent ->
                 viewModel.handleGoogleSignInResult(intent)
             }
@@ -271,7 +270,7 @@ fun LoginScreen(
                             val intentSender = viewModel.getGoogleSignInIntent()
                             intentSender?.let {
                                 val intentSenderRequest = IntentSenderRequest.Builder(it).build()
-                                launcher.launch(intentSenderRequest)   // ✅ Correct
+                                launcher.launch(intentSenderRequest)
                             }
                         }
 

@@ -36,7 +36,8 @@ import androidx.compose.ui.platform.LocalContext
 @Composable
 fun AddItemScreen(
     navController: NavHostController,
-    viewModel: AddItemViewModel = hiltViewModel()
+    viewModel: AddItemViewModel = hiltViewModel(),
+    itemId: String? = null
 ) {
 
     var title by remember { mutableStateOf("") }
@@ -53,6 +54,26 @@ fun AddItemScreen(
 
     val context = LocalContext.current
 
+    LaunchedEffect(itemId) {
+        if (itemId != null) {
+            viewModel.loadItem(itemId)
+        }
+    }
+
+    val existingItem = viewModel.existingItem
+
+    LaunchedEffect(existingItem) {
+        existingItem?.let {
+            title = it.title
+            price = it.price
+            category = it.category
+            description = it.description
+            location = it.location
+
+            selectedTypes.clear()
+            selectedTypes.addAll(it.types)
+        }
+    }
 
 
     val launcher = rememberLauncherForActivityResult(
@@ -157,32 +178,35 @@ fun AddItemScreen(
 
         Button(
             onClick = {
-                if (title.isNotBlank() && price.isNotBlank() && phone.length == 10) {
+                if (title.isNotBlank() && price.isNotBlank()) {
+
                     val currentUser = FirebaseAuth.getInstance().currentUser
 
                     val item = currentUser?.let {
                         Item(
+                            id = existingItem?.id ?: "",
                             title = title,
                             price = price,
                             category = category,
                             types = selectedTypes.toList(),
                             description = description,
-                            imageUrl = "",
+                            imageUrl = existingItem?.imageUrl ?: "https://picsum.photos/200",
                             location = location,
                             userId = it.uid,
                             userName = it.displayName ?: "Unknown",
-                            userEmail = it.email ?: "",
-                            userPhone = "91$phone"
+                            userEmail = it.email ?: ""
                         )
                     }
 
                     item?.let {
-                        viewModel.addItem(item, imageUri, context)
+                        if (existingItem != null) {
+                            viewModel.updateItem(it)
+                        } else {
+                            viewModel.addItem(item, imageUri, context)
+                        }
                     }
                 }
-            },
-            enabled = !isLoading,
-            modifier = Modifier.fillMaxWidth()
+            }
         )
         {
             Text("Add Item")

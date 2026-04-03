@@ -121,4 +121,16 @@ class ItemRepositoryImpl @Inject constructor(
         awaitClose { listener.remove() }
     }
 
+    override suspend fun updateItem(item: Item) {
+        firestore.collection("items")
+            .document(item.id)
+            .set(item)
+    }
+
+    override suspend fun deleteItem(itemId: String) {
+        firestore.collection("items")
+            .document(itemId)
+            .delete()
+    }
+
 }

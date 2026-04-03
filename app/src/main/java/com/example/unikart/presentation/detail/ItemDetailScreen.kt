@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.unikart.presentation.navigation.Screen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ItemDetailsScreen(
@@ -29,6 +31,10 @@ fun ItemDetailsScreen(
     LaunchedEffect(Unit) {
         viewModel.loadItem(itemId)
     }
+
+    val currentUser = FirebaseAuth.getInstance().currentUser
+
+
 
     if (isLoading) {
         Box(
@@ -45,6 +51,27 @@ fun ItemDetailsScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
+
+                if (item != null) {
+                    if (currentUser?.uid == item.userId) {
+                        Button(onClick = {
+                            navController.navigate(
+                                Screen.EditItem.createRoute(item.id)
+                            )
+                        }) { Text("Edit") }
+
+                        Button(
+                            onClick = {
+                                viewModel.deleteItem(item.id)
+                                navController.popBackStack()
+                            }
+                        ) {
+                            Text("Delete")
+                        }
+
+                        Button(onClick = { /* Mark Sold */ }) { Text("Mark as Sold") }
+                    }
+                }
 
                 AsyncImage(
                     model = it.imageUrl,

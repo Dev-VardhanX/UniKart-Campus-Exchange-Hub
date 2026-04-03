@@ -69,7 +69,6 @@ object AppModule{
         )
     }
 
-
     @Provides
     @Singleton
     fun provideFirestore(): FirebaseFirestore {
