@@ -38,7 +38,10 @@ class ItemRepositoryImpl @Inject constructor(
                 }
 
                 val items = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(Item::class.java)?.copy(id = doc.id)
+                    doc.toObject(Item::class.java)?.copy(
+                        id = doc.id,
+                        isSold = doc.getBoolean("isSold") ?: false
+                        )
                 } ?: emptyList()
 
                 trySend(items).getOrNull()
@@ -56,7 +59,10 @@ class ItemRepositoryImpl @Inject constructor(
                 .get()
                 .await()
 
-            doc.toObject(Item::class.java)?.copy(id = doc.id)
+            doc.toObject(Item::class.java)?.copy(
+                id = doc.id,
+                isSold = doc.getBoolean("isSold") ?: false
+                )
         } catch (e: Exception) {
             null
         }
@@ -112,7 +118,9 @@ class ItemRepositoryImpl @Inject constructor(
                 }
 
                 val items = snapshot?.documents?.mapNotNull {
-                    it.toObject(Item::class.java)?.copy(id = it.id)
+                    it.toObject(Item::class.java)?.copy(id = it.id,
+                        isSold = it.getBoolean("isSold") ?: false
+                        )
                 } ?: emptyList()
 
                 trySend(items)
@@ -124,7 +132,11 @@ class ItemRepositoryImpl @Inject constructor(
     override suspend fun updateItem(item: Item) {
         firestore.collection("items")
             .document(item.id)
-            .set(item)
+            .update(
+                mapOf(
+                    "isSold" to item.isSold
+                )
+            )
     }
 
     override suspend fun deleteItem(itemId: String) {

@@ -69,7 +69,14 @@ fun ItemDetailsScreen(
                             Text("Delete")
                         }
 
-                        Button(onClick = { /* Mark Sold */ }) { Text("Mark as Sold") }
+                        Button(
+                            onClick = {
+                                viewModel.toggleSold(it)
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(if (it.isSold) "Mark as Available" else "Mark as Sold")
+                        }
                     }
                 }
 
@@ -162,6 +169,7 @@ fun ItemDetailsScreen(
                     Button(
                         onClick = {
 
+
                             val phone = it.userPhone
                             val message = "Hi ${it.userName}, I'm interested in your item \"${it.title}\" listed for ₹${it.price}. Is it still available?"
 
@@ -172,9 +180,10 @@ fun ItemDetailsScreen(
 
                             context.startActivity(intent)
                         },
+                        enabled = !it.isSold,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Chat on WhatsApp")
+                        Text(if (it.isSold) "Item Sold" else "Chat on WhatsApp")
                     }
                 }
             }

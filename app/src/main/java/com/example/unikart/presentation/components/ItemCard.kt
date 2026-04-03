@@ -43,6 +43,13 @@ fun ItemCard(
                     .height(120.dp)
             )
 
+            if (item.isSold) {
+                Text(
+                    text = "SOLD",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
