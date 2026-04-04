@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 
 @Composable
@@ -51,7 +52,6 @@ fun AddItemScreen(
     var rentPrice by remember { mutableStateOf("") }
     var rentDuration by remember { mutableStateOf("") }
     var exchangeFor by remember { mutableStateOf("") }
-    // var imageUri by remember { mutableStateOf<Uri?>(null) }
     val imageUris = remember { mutableStateListOf<Uri>() }
 
     val selectedTypes = remember { mutableStateListOf<String>() }

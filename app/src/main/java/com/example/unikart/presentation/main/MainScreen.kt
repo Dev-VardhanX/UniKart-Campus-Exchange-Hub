@@ -1,13 +1,19 @@
 package com.example.unikart.presentation.main
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -46,14 +52,17 @@ fun MainScreen(
                     onClick = {
                         navController.navigate(Screen.AddItem.route)
                     },
-                    modifier = Modifier.padding(bottom = 72.dp),
-                    shape = RoundedCornerShape(70.dp),
+                    modifier = Modifier
+                        .offset(y = 40.dp),
+
+                    shape = RoundedCornerShape(100.dp),
                     containerColor = Color(0xFFC19DE7),
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add Item")
                 }
             }
-        }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
 
     ) { padding ->
 

@@ -1,5 +1,7 @@
 package com.example.unikart.presentation.components
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -12,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.unikart.presentation.navigation.Screen
@@ -31,7 +34,9 @@ fun BottomNavBar(navController: NavController, modifier: Modifier = Modifier) {
         BottomNavItem("Account", Screen.Account.route, Icons.Default.Person)
     )
 
-    NavigationBar(modifier = modifier) {
+    NavigationBar(
+        modifier = modifier.height(110.dp),
+        ) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry.value?.destination?.route
 
@@ -54,7 +59,9 @@ fun BottomNavBar(navController: NavController, modifier: Modifier = Modifier) {
                 },
                 label = {
                     Text(item.name)
-                }
+                },
+                alwaysShowLabel = false,
+
             )
         }
     }
