@@ -112,6 +112,28 @@ fun ItemDetailsScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    if (it.types.contains("Rent")) {
+                        Text(
+                            text = "Rent: ₹${it.rentPrice} / ${it.rentDuration}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    if (it.types.contains("Exchange")) {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "🔄 Exchange For:",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text(it.exchangeFor)
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
                         text = "📍 ${it.location}",
                         style = MaterialTheme.typography.bodyMedium

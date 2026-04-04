@@ -14,5 +14,8 @@ data class Item(
     val userEmail: String = "",
     val timestamp: Long = System.currentTimeMillis(),
     val userPhone: String = "",
-    val isSold: Boolean = false
+    val isSold: Boolean = false,
+    val rentPrice: String = "",
+    val rentDuration: String = "",
+    val exchangeFor: String = ""
 )

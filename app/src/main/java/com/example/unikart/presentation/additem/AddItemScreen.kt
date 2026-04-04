@@ -48,7 +48,10 @@ fun AddItemScreen(
     var category by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
-   // var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var rentPrice by remember { mutableStateOf("") }
+    var rentDuration by remember { mutableStateOf("") }
+    var exchangeFor by remember { mutableStateOf("") }
+    // var imageUri by remember { mutableStateOf<Uri?>(null) }
     val imageUris = remember { mutableStateListOf<Uri>() }
 
     val selectedTypes = remember { mutableStateListOf<String>() }
@@ -104,11 +107,41 @@ fun AddItemScreen(
             label = { Text("Title") }
         )
 
-        OutlinedTextField(
-            value = price,
-            onValueChange = { price = it },
-            label = { Text("Price") }
-        )
+        if (selectedTypes.contains("Sell")){
+            OutlinedTextField(
+                value = price,
+                onValueChange = { price = it },
+                label = { Text("Price") }
+            )
+        }
+
+        if (selectedTypes.contains("Rent")) {
+
+            OutlinedTextField(
+                value = rentPrice,
+                onValueChange = { rentPrice = it },
+                label = { Text("Rent Price") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = rentDuration,
+                onValueChange = { rentDuration = it },
+                label = { Text("Duration (day/week/month)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+
+        if (selectedTypes.contains("Exchange")) {
+
+            OutlinedTextField(
+                value = exchangeFor,
+                onValueChange = { exchangeFor = it },
+                label = { Text("Looking to exchange with...") },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         OutlinedTextField(
             value = category,
@@ -200,9 +233,20 @@ fun AddItemScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        val isSell = selectedTypes.contains("Sell")
+        val isRent = selectedTypes.contains("Rent")
+        val isExchange = selectedTypes.contains("Exchange")
+
+        val isValid = when {
+            isSell -> title.isNotBlank() && price.isNotBlank()
+            isRent -> title.isNotBlank() && rentPrice.isNotBlank() && rentDuration.isNotBlank()
+            isExchange -> title.isNotBlank() && exchangeFor.isNotBlank()
+            else -> false
+        }
+
         Button(
             onClick = {
-                if (title.isNotBlank() && price.isNotBlank()) {
+                if (isValid) {
 
                     val currentUser = FirebaseAuth.getInstance().currentUser
 
@@ -218,7 +262,12 @@ fun AddItemScreen(
                             location = location,
                             userId = it.uid,
                             userName = it.displayName ?: "Unknown",
-                            userEmail = it.email ?: ""
+                            userEmail = it.email ?: "",
+                            userPhone = phone,
+                            rentPrice = rentPrice,
+                            rentDuration = rentDuration,
+                            exchangeFor = exchangeFor
+
                         )
                     }
 
@@ -246,6 +295,9 @@ fun AddItemScreen(
                 description = ""
                 location = ""
                 phone = ""
+                rentPrice = ""
+                rentDuration = ""
+                exchangeFor = ""
                 selectedTypes.clear()
                 navController.popBackStack()
             }

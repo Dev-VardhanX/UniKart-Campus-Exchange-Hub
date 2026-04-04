@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -68,9 +70,33 @@ fun ItemCard(
                 )
             }
 
+            Row {
+                item.types.forEach { type ->
+                    AssistChip(
+                        onClick = {},
+                        label = { Text(type) },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = when(type) {
+                                "Sell" -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                "Rent" -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+                                "Exchange" -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
+                                else -> MaterialTheme.colorScheme.surface
+                            }
+                        ),
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                }
+            }
+
+            val priceText = when {
+                item.types.contains("Sell") -> "₹${item.price}"
+                item.types.contains("Rent") -> "₹${item.rentPrice} / ${item.rentDuration}"
+                item.types.contains("Exchange") -> "For ${item.exchangeFor}"
+                else -> ""
+            }
 
             Text(
-                text = "₹${item.price}",
+                text = "${priceText}",
                 style = MaterialTheme.typography.bodyMedium
             )
 
