@@ -29,9 +29,12 @@ import com.google.firebase.auth.FirebaseAuth
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
 
 @Composable
 fun AddItemScreen(
@@ -45,7 +48,8 @@ fun AddItemScreen(
     var category by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+   // var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val imageUris = remember { mutableStateListOf<Uri>() }
 
     val selectedTypes = remember { mutableStateListOf<String>() }
 
@@ -77,9 +81,10 @@ fun AddItemScreen(
 
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imageUri = uri
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris ->
+        imageUris.clear()
+        imageUris.addAll(uris)
     }
 
     Column(
@@ -171,7 +176,26 @@ fun AddItemScreen(
         Button(onClick = {
             launcher.launch("image/*")
         }) {
-            Text("Pick Image")
+            Text("Pick Images")
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+        ) {
+            imageUris.forEach { uri ->
+                AsyncImage(
+                    model = uri,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(4.dp)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -190,7 +214,7 @@ fun AddItemScreen(
                             category = category,
                             types = selectedTypes.toList(),
                             description = description,
-                            imageUrl = existingItem?.imageUrl ?: "https://picsum.photos/200",
+                            imageUrls = emptyList(),
                             location = location,
                             userId = it.uid,
                             userName = it.displayName ?: "Unknown",
@@ -202,7 +226,7 @@ fun AddItemScreen(
                         if (existingItem != null) {
                             viewModel.updateItem(it)
                         } else {
-                            viewModel.addItem(item, imageUri, context)
+                            viewModel.addItem(item, imageUris , context)
                         }
                     }
                 }

@@ -27,4 +27,14 @@ class CloudinaryRepository @Inject constructor(
 
         return response.secure_url
     }
+
+
+    suspend fun uploadImages(
+        uris: List<Uri>,
+        context: Context
+    ): List<String> {
+        return uris.map { uri ->
+            uploadImage(uri, context)
+        }
+    }
 }

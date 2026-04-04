@@ -7,7 +7,7 @@ data class Item(
     val category: String = "",
     val types: List<String> = emptyList(),
     val description: String = "",
-    val imageUrl: String = "",
+    val imageUrls: List<String> = emptyList(),
     val location: String = "",
     val userId: String = "",
     val userName: String = "",

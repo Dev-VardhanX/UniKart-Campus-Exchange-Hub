@@ -31,16 +31,17 @@ fun ItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .clickable { onClick() }
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
 
             AsyncImage(
-                model = item.imageUrl,
+                model = item.imageUrls.firstOrNull(),
                 contentDescription = item.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(180.dp)
             )
 
             if (item.isSold) {

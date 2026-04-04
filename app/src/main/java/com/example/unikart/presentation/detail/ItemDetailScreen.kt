@@ -3,6 +3,8 @@ package com.example.unikart.presentation.detail
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -80,13 +82,19 @@ fun ItemDetailsScreen(
                     }
                 }
 
-                AsyncImage(
-                    model = it.imageUrl,
-                    contentDescription = it.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(260.dp)
-                )
+                
+                LazyRow {
+                    items(it.imageUrls) { url ->
+                        AsyncImage(
+                            model = url,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(300.dp)
+                                .height(250.dp)
+                                .padding(8.dp)
+                        )
+                    }
+                }
 
                 Column(modifier = Modifier.padding(16.dp)) {
 

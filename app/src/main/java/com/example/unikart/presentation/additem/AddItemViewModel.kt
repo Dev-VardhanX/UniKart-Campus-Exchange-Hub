@@ -60,16 +60,18 @@ class AddItemViewModel @Inject constructor(
         }
     }
 
-    fun addItem(item: Item, imageUri: Uri?, context: Context) {
+    fun addItem(item: Item, imageUris: List<Uri>, context: Context) {
         viewModelScope.launch {
             isLoading = true
             try {
 
-                val imageUrl = imageUri?.let {
-                    cloudinaryRepository.uploadImage(it, context)
-                } ?: ""
+                val imageUrls = if (imageUris.isNotEmpty()) {
+                    cloudinaryRepository.uploadImages(imageUris, context)
+                } else {
+                    emptyList()
+                }
 
-                val updatedItem = item.copy(imageUrl = imageUrl)
+                val updatedItem = item.copy(imageUrls = imageUrls)
 
                 addItemUseCase(updatedItem)
 
