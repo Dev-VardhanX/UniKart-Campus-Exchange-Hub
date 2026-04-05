@@ -48,10 +48,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun register(email: String, password: String) {
+    fun register(userName : String,email: String, password: String) {
         viewModelScope.launch {
             authState = authState.copy(isLoading = true)
-            val result = registerUseCase(email, password)
+            val result = registerUseCase(userName,email,password)
             authState = when {
                 result.isSuccess -> authState.copy(isLoading = false, isSuccess = true)
                 else -> authState.copy(isLoading = false, error = result.exceptionOrNull()?.message)

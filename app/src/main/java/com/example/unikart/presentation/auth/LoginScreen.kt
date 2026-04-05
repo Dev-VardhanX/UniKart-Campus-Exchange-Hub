@@ -30,6 +30,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -82,6 +83,19 @@ fun LoginScreen(
         }
     }
 
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = Color.Black,
+        unfocusedTextColor = Color.Black,
+        focusedLabelColor = Color(0xFF0056FF),
+        unfocusedLabelColor = Color.Gray,
+        focusedBorderColor = Color(0xFF0056FF),
+        unfocusedBorderColor = Color.Gray,
+        cursorColor = Color(0xFF0056FF),
+        focusedLeadingIconColor = Color(0xFF0056FF),
+        unfocusedLeadingIconColor = Color.Gray,
+        focusedTrailingIconColor = Color(0xFF0056FF),
+        unfocusedTrailingIconColor = Color.Gray
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -104,9 +118,9 @@ fun LoginScreen(
                         painter = painterResource(id = R.drawable.logo),
                         contentDescription = "Logo",
                         modifier = Modifier
-                            .size(20.dp)
+                            .size(50.dp)
 
-                            .offset(x = (0).dp, y = 26.dp)
+                            .offset(x = (0).dp, y = 12.dp)
                     )
 
                     Text(
@@ -165,7 +179,8 @@ fun LoginScreen(
                         imageVector = Icons.Default.Email,
                         contentDescription = "Email Icon"
                     )
-                }
+                },
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -175,6 +190,7 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                colors = textFieldColors,
                 trailingIcon = {
                     val icon =
                         if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
