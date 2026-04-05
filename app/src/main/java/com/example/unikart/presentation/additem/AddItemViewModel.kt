@@ -2,6 +2,7 @@ package com.example.unikart.presentation.additem
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,13 +11,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.unikart.data.model.Item
 import com.example.unikart.data.repository.CloudinaryRepository
 import com.example.unikart.domain.usecase.AddItemUseCase
+import com.example.unikart.domain.usecase.GetItemUseCase
+import com.example.unikart.domain.usecase.UpdateItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
-import com.example.unikart.domain.usecase.GetItemUseCase
-import com.example.unikart.domain.usecase.UpdateItemUseCase
-
 
 @HiltViewModel
 class AddItemViewModel @Inject constructor(
@@ -46,14 +45,23 @@ class AddItemViewModel @Inject constructor(
         }
     }
 
-    fun updateItem(item: Item) {
+    fun updateItem(item: Item, imageUris: List<Uri>, context: Context) {
         viewModelScope.launch {
             isLoading = true
             try {
-                updateItemUseCase(item)
+                val finalImageUrls = if (imageUris.isNotEmpty()) {
+                    cloudinaryRepository.uploadImages(imageUris, context)
+                } else {
+                    existingItem?.imageUrls ?: emptyList()
+                }
+
+                val updatedItem = item.copy(imageUrls = finalImageUrls)
+
+                updateItemUseCase(updatedItem)
                 isSuccess = true
             } catch (e: Exception) {
                 e.printStackTrace()
+                Log.e("UPDATE_ITEM_ERROR", e.message.toString())
             } finally {
                 isLoading = false
             }
@@ -64,7 +72,6 @@ class AddItemViewModel @Inject constructor(
         viewModelScope.launch {
             isLoading = true
             try {
-
                 val imageUrls = if (imageUris.isNotEmpty()) {
                     cloudinaryRepository.uploadImages(imageUris, context)
                 } else {
@@ -74,7 +81,6 @@ class AddItemViewModel @Inject constructor(
                 val updatedItem = item.copy(imageUrls = imageUrls)
 
                 addItemUseCase(updatedItem)
-
                 isSuccess = true
 
             } catch (e: Exception) {

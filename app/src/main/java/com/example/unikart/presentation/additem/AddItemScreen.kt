@@ -96,11 +96,13 @@ fun AddItemScreen(
         }
     }
 
+    val maxImages = 5
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris ->
         imageUris.clear()
-        imageUris.addAll(uris)
+        imageUris.addAll(uris.take(maxImages))
     }
 
     val isSell = selectedTypes.contains("Sell")
@@ -108,9 +110,22 @@ fun AddItemScreen(
     val isExchange = selectedTypes.contains("Exchange")
 
     val isValid = when {
-        isSell -> title.isNotBlank() && price.isNotBlank() && category.isNotBlank()
-        isRent -> title.isNotBlank() && rentPrice.isNotBlank() && rentDuration.isNotBlank() && category.isNotBlank()
-        isExchange -> title.isNotBlank() && exchangeFor.isNotBlank() && category.isNotBlank()
+        isSell -> title.isNotBlank() &&
+                price.isNotBlank() &&
+                category.isNotBlank() &&
+                phone.length == 10
+
+        isRent -> title.isNotBlank() &&
+                rentPrice.isNotBlank() &&
+                rentDuration.isNotBlank() &&
+                category.isNotBlank() &&
+                phone.length == 10
+
+        isExchange -> title.isNotBlank() &&
+                exchangeFor.isNotBlank() &&
+                category.isNotBlank() &&
+                phone.length == 10
+
         else -> false
     }
 
@@ -149,13 +164,22 @@ fun AddItemScreen(
                 style = MaterialTheme.typography.titleMedium
             )
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "Fill basic info about your item",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Title") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -174,7 +198,8 @@ fun AddItemScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor()
+                        .menuAnchor(),
+                    singleLine = true
                 )
 
                 DropdownMenu(
@@ -199,17 +224,40 @@ fun AddItemScreen(
                 value = location,
                 onValueChange = { location = it },
                 label = { Text("Location") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = phone,
-                onValueChange = { phone = it },
+                onValueChange = {
+                    if (it.length <= 10 && it.all { char -> char.isDigit() }) {
+                        phone = it
+                    }
+                },
                 label = { Text("Phone Number (WhatsApp)") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = phone.isNotEmpty() && phone.length < 10
             )
+
+            if (phone.isNotEmpty() && phone.length < 10) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Enter a valid 10-digit number",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            } else {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Used for WhatsApp contact",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -226,6 +274,14 @@ fun AddItemScreen(
             Text(
                 text = "Listing Type",
                 style = MaterialTheme.typography.titleMedium
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "Select how you want to list your item",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -267,6 +323,14 @@ fun AddItemScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
 
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Fill details based on selected type",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+
                 Spacer(modifier = Modifier.height(12.dp))
 
                 if (isSell) {
@@ -274,7 +338,8 @@ fun AddItemScreen(
                         value = price,
                         onValueChange = { price = it },
                         label = { Text("Price") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -285,7 +350,8 @@ fun AddItemScreen(
                         value = rentPrice,
                         onValueChange = { rentPrice = it },
                         label = { Text("Rent Price") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -294,7 +360,8 @@ fun AddItemScreen(
                         value = rentDuration,
                         onValueChange = { rentDuration = it },
                         label = { Text("Duration (day/week/month)") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -304,8 +371,9 @@ fun AddItemScreen(
                     OutlinedTextField(
                         value = exchangeFor,
                         onValueChange = { exchangeFor = it },
-                        label = { Text("Looking to exchange with...") },
-                        modifier = Modifier.fillMaxWidth()
+                        label = { Text("Looking to exchange with") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
                     )
                 }
             }
@@ -327,6 +395,14 @@ fun AddItemScreen(
                 style = MaterialTheme.typography.titleMedium
             )
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "Describe your item clearly to attract buyers",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
@@ -336,7 +412,7 @@ fun AddItemScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
-                maxLines = 5
+                maxLines = 20
             )
         }
 
@@ -366,6 +442,14 @@ fun AddItemScreen(
                 Text("Pick Images")
             }
 
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "You can upload up to 5 images",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+
             Spacer(modifier = Modifier.height(12.dp))
 
             Row(
@@ -373,17 +457,33 @@ fun AddItemScreen(
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
             ) {
-                imageUris.forEach { uri ->
-                    Box(
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        AsyncImage(
-                            model = uri,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                        )
+                if (imageUris.isNotEmpty()) {
+                    imageUris.forEach { uri ->
+                        Box(
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            AsyncImage(
+                                model = uri,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                            )
+                        }
+                    }
+                } else {
+                    existingItem?.imageUrls?.forEach { url ->
+                        Box(
+                            modifier = Modifier.padding(end = 8.dp)
+                        ) {
+                            AsyncImage(
+                                model = url,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                            )
+                        }
                     }
                 }
             }
@@ -404,7 +504,7 @@ fun AddItemScreen(
                             category = category,
                             types = selectedTypes.toList(),
                             description = description,
-                            imageUrls = if(imageUris.isNotEmpty()) {emptyList()} else {existingItem?.imageUrls ?: emptyList()},
+                            imageUrls = existingItem?.imageUrls ?: emptyList(),
                             location = location,
                             userId = it.uid,
                             userName = it.displayName ?: "Unknown",
@@ -418,9 +518,9 @@ fun AddItemScreen(
 
                     item?.let {
                         if (existingItem != null) {
-                            viewModel.updateItem(it)
+                            viewModel.updateItem(it, imageUris, context)
                         } else {
-                            viewModel.addItem(item, imageUris, context)
+                            viewModel.addItem(it, imageUris, context)
                         }
                     }
                 }
@@ -428,21 +528,19 @@ fun AddItemScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
-            enabled = !isLoading,
+            enabled = !isLoading && isValid,
             shape = RoundedCornerShape(16.dp)
-        ) {if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
-        } else {
-            Text(if (existingItem != null) "Update Item" else "Add Item")
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text(if (existingItem != null) "Update Listing" else "Post Item")
+            }
         }
-
-        }
-
-
 
         LaunchedEffect(isSuccess) {
             if (isSuccess) {

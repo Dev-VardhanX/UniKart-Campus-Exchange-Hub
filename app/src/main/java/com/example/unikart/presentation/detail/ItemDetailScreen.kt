@@ -69,19 +69,6 @@ fun ItemDetailsScreen(
 
         val isOwner = currentUser?.uid == currentItem.userId
 
-        val displayPrice = when {
-            currentItem.types.contains("Sell") && currentItem.price.isNotBlank() ->
-                "₹${currentItem.price}"
-
-            currentItem.types.contains("Rent") && currentItem.rentPrice.isNotBlank() ->
-                "₹${currentItem.rentPrice} / ${currentItem.rentDuration}"
-
-            currentItem.types.contains("Exchange") ->
-                "Exchange"
-
-            else -> ""
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -148,14 +135,38 @@ fun ItemDetailsScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                if (displayPrice.isNotBlank()) {
+                if (currentItem.types.contains("Sell") && currentItem.price.isNotBlank()) {
                     Text(
-                        text = displayPrice,
+                        text = "Price: ₹${currentItem.price}",
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+
+                if (currentItem.types.contains("Rent") && currentItem.rentPrice.isNotBlank()) {
+                    Text(
+                        text = "Rent: ₹${currentItem.rentPrice} / ${currentItem.rentDuration}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+
+                if (
+                    currentItem.types.contains("Exchange") &&
+                    !currentItem.types.contains("Sell") &&
+                    !currentItem.types.contains("Rent")
+                ) {
+                    Text(
+                        text = "Available for Exchange",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
 
                 Text(
