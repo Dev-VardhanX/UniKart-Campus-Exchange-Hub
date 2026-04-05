@@ -404,7 +404,7 @@ fun AddItemScreen(
                             category = category,
                             types = selectedTypes.toList(),
                             description = description,
-                            imageUrls = emptyList(),
+                            imageUrls = if(imageUris.isNotEmpty()) {emptyList()} else {existingItem?.imageUrls ?: emptyList()},
                             location = location,
                             userId = it.uid,
                             userName = it.displayName ?: "Unknown",

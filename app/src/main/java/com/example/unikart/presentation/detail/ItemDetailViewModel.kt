@@ -27,14 +27,6 @@ class ItemDetailsViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
         private set
 
-//    fun loadItem(id: String) {
-//        viewModelScope.launch {
-//            isLoading = true
-//            item = getItemByIdUseCase(id)
-//            isLoading = false
-//        }
-//    }
-
     fun loadItem(itemId: String) {
         viewModelScope.launch {
             isLoading = true
