@@ -33,10 +33,18 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
+import com.example.unikart.presentation.common.itemCategories
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemScreen(
     navController: NavHostController,
@@ -52,6 +60,8 @@ fun AddItemScreen(
     var rentPrice by remember { mutableStateOf("") }
     var rentDuration by remember { mutableStateOf("") }
     var exchangeFor by remember { mutableStateOf("") }
+
+    var expanded by remember { mutableStateOf(false) }
     val imageUris = remember { mutableStateListOf<Uri>() }
 
     val selectedTypes = remember { mutableStateListOf<String>() }
@@ -143,11 +153,38 @@ fun AddItemScreen(
             )
         }
 
-        OutlinedTextField(
-            value = category,
-            onValueChange = { category = it },
-            label = { Text("Category") }
-        )
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = category,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Category") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                itemCategories.forEach { itemCategory ->
+                    DropdownMenuItem(
+                        text = { Text(itemCategory) },
+                        onClick = {
+                            category = itemCategory
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
 
         OutlinedTextField(
             value = location,
@@ -238,9 +275,9 @@ fun AddItemScreen(
         val isExchange = selectedTypes.contains("Exchange")
 
         val isValid = when {
-            isSell -> title.isNotBlank() && price.isNotBlank()
-            isRent -> title.isNotBlank() && rentPrice.isNotBlank() && rentDuration.isNotBlank()
-            isExchange -> title.isNotBlank() && exchangeFor.isNotBlank()
+            isSell -> title.isNotBlank() && price.isNotBlank() && category.isNotBlank()
+            isRent -> title.isNotBlank() && rentPrice.isNotBlank() && rentDuration.isNotBlank()&& category.isNotBlank()
+            isExchange -> title.isNotBlank() && exchangeFor.isNotBlank()&& category.isNotBlank()
             else -> false
         }
 

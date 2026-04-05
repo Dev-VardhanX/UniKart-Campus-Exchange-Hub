@@ -42,6 +42,8 @@ class HomeViewModel @Inject constructor(
     var maxPrice by mutableStateOf(10000f)
         private set
 
+
+
     init {
         fetchItems()
     }
@@ -58,7 +60,10 @@ class HomeViewModel @Inject constructor(
 
                 val filtered = itemList.filter { item ->
 
-                    val matchesSearch = item.title.contains(searchQuery, true)
+                   // val matchesSearch = item.title.contains(searchQuery, true)
+                    val matchesSearch =
+                        item.title.contains(searchQuery, ignoreCase = true) ||
+                                item.description.contains(searchQuery, ignoreCase = true)
 
                     val matchesCategory =
                         selectedCategory.isEmpty() || item.category == selectedCategory
@@ -66,8 +71,16 @@ class HomeViewModel @Inject constructor(
                     val matchesType =
                         selectedType.isEmpty() || item.types.contains(selectedType)
 
-                    val price = item.price.toFloatOrNull() ?: 0f
-                    val matchesPrice = price in minPrice..maxPrice
+//                    val price = item.price.toFloatOrNull() ?: 0f
+//                    val matchesPrice = price in minPrice..maxPrice
+
+                    val displayPrice = when {
+                        item.types.contains("Sell") -> item.price.toFloatOrNull() ?: 0f
+                        item.types.contains("Rent") -> item.rentPrice.toFloatOrNull() ?: 0f
+                        else -> 0f
+                    }
+
+                    val matchesPrice = displayPrice in minPrice..maxPrice
 
                     matchesSearch && matchesCategory && matchesType && matchesPrice
                 }
