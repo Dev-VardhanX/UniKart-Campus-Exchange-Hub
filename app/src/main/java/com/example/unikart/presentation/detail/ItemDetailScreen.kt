@@ -114,7 +114,7 @@ fun ItemDetailsScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
 
-                if (currentItem.isSold) {
+                if (currentItem.sold) {
                     Text(
                         text = "SOLD",
                         color = MaterialTheme.colorScheme.onError,
@@ -256,7 +256,7 @@ fun ItemDetailsScreen(
                         shape = RoundedCornerShape(14.dp)
                     ) {
                         Text(
-                            if (currentItem.isSold) "Mark as Available" else "Mark as Sold"
+                            if (currentItem.sold) "Mark as Available" else "Mark as Sold"
                         )
                     }
 
@@ -332,13 +332,13 @@ fun ItemDetailsScreen(
                             context.startActivity(intent)
                         }
                     },
-                    enabled = !currentItem.isSold && currentItem.userPhone.isNotBlank(),
+                    enabled = !currentItem.sold && currentItem.userPhone.isNotBlank(),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
                         when {
-                            currentItem.isSold -> "Item Sold"
+                            currentItem.sold -> "Item Sold"
                             currentItem.userPhone.isBlank() -> "Phone Not Available"
                             else -> "Chat on WhatsApp"
                         }

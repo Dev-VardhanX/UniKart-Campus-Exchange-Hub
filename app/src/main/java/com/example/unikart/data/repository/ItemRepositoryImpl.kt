@@ -40,7 +40,7 @@ class ItemRepositoryImpl @Inject constructor(
                 val items = snapshot?.documents?.mapNotNull { doc ->
                     doc.toObject(Item::class.java)?.copy(
                         id = doc.id,
-                        isSold = doc.getBoolean("isSold") ?: false
+                        sold = doc.getBoolean("sold") ?: false
                         )
                 } ?: emptyList()
 
@@ -61,7 +61,7 @@ class ItemRepositoryImpl @Inject constructor(
 
             doc.toObject(Item::class.java)?.copy(
                 id = doc.id,
-                isSold = doc.getBoolean("isSold") ?: false
+                sold = doc.getBoolean("sold") ?: false
                 )
         } catch (e: Exception) {
             null
@@ -119,7 +119,7 @@ class ItemRepositoryImpl @Inject constructor(
 
                 val items = snapshot?.documents?.mapNotNull {
                     it.toObject(Item::class.java)?.copy(id = it.id,
-                        isSold = it.getBoolean("isSold") ?: false
+                        sold = it.getBoolean("sold") ?: false
                         )
                 } ?: emptyList()
 

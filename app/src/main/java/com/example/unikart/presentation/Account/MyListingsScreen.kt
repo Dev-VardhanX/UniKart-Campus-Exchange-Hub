@@ -49,8 +49,8 @@ fun MyListingsScreen(
     }
 
     val filteredItems = when (selectedTab) {
-        "Available" -> items.filter { !it.isSold }
-        "Sold" -> items.filter { it.isSold }
+        "Available" -> items.filter { !it.sold }
+        "Sold" -> items.filter { it.sold }
         else -> items
     }
 

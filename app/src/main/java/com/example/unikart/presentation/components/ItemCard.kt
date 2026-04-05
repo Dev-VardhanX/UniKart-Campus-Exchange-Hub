@@ -86,7 +86,7 @@ fun ItemCard(
                     )
                 }
 
-                if (item.isSold) {
+                if (item.sold) {
                     Text(
                         text = "SOLD",
                         color = MaterialTheme.colorScheme.onError,

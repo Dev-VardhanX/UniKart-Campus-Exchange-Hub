@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.unikart.data.model.Item
 import com.example.unikart.domain.usecase.DeleteItemUseCase
 import com.example.unikart.domain.usecase.GetItemByIdUseCase
-import com.example.unikart.domain.usecase.GetItemUseCase
 import com.example.unikart.domain.usecase.UpdateItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -50,9 +49,9 @@ class ItemDetailsViewModel @Inject constructor(
     fun markAsSold(currentItem: Item) {
         viewModelScope.launch {
             try {
-                updateItemUseCase(currentItem.copy(isSold = true))
+                updateItemUseCase(currentItem.copy(sold = true))
 
-                item = currentItem.copy(isSold = true)
+                item = currentItem.copy(sold = true)
 
 
             } catch (e: Exception) {
@@ -64,14 +63,14 @@ class ItemDetailsViewModel @Inject constructor(
     fun toggleSold(currentItem: Item) {
         viewModelScope.launch {
             try {
-                val newStatus = !currentItem.isSold
+                val newStatus = !currentItem.sold
 
                 updateItemUseCase(
-                    currentItem.copy(isSold = newStatus)
+                    currentItem.copy(sold = newStatus)
                 )
 
                 // update UI instantly
-                item = currentItem.copy(isSold = newStatus)
+                item = currentItem.copy(sold = newStatus)
 
             } catch (e: Exception) {
                 e.printStackTrace()
