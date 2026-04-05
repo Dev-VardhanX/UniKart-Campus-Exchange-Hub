@@ -2,16 +2,36 @@ package com.example.unikart.presentation.detail
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,17 +46,14 @@ fun ItemDetailsScreen(
     itemId: String,
     viewModel: ItemDetailsViewModel = hiltViewModel()
 ) {
-
     val item = viewModel.item
     val isLoading = viewModel.isLoading
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(itemId) {
         viewModel.loadItem(itemId)
     }
-
-    val currentUser = FirebaseAuth.getInstance().currentUser
-
-
 
     if (isLoading) {
         Box(
@@ -45,178 +62,503 @@ fun ItemDetailsScreen(
         ) {
             CircularProgressIndicator()
         }
-    } else {
-        item?.let {
+        return
+    }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
+    item?.let { currentItem ->
 
-                if (item != null) {
-                    if (currentUser?.uid == item.userId) {
-                        Button(onClick = {
-                            navController.navigate(
-                                Screen.EditItem.createRoute(item.id)
-                            )
-                        }) { Text("Edit") }
+        val isOwner = currentUser?.uid == currentItem.userId
 
-                        Button(
-                            onClick = {
-                                viewModel.deleteItem(item.id)
-                                navController.popBackStack()
-                            }
-                        ) {
-                            Text("Delete")
-                        }
+        val displayPrice = when {
+            currentItem.types.contains("Sell") && currentItem.price.isNotBlank() ->
+                "₹${currentItem.price}"
 
-                        Button(
-                            onClick = {
-                                viewModel.toggleSold(it)
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(if (it.isSold) "Mark as Available" else "Mark as Sold")
-                        }
-                    }
-                }
+            currentItem.types.contains("Rent") && currentItem.rentPrice.isNotBlank() ->
+                "₹${currentItem.rentPrice} / ${currentItem.rentDuration}"
 
-                
-                LazyRow {
-                    items(it.imageUrls) { url ->
+            currentItem.types.contains("Exchange") ->
+                "Exchange"
+
+            else -> ""
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+
+            if (currentItem.imageUrls.isNotEmpty()) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(currentItem.imageUrls) { url ->
                         AsyncImage(
                             model = url,
-                            contentDescription = null,
+                            contentDescription = currentItem.title,
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .width(300.dp)
-                                .height(250.dp)
-                                .padding(8.dp)
+                                .padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
+                                .width(320.dp)
+                                .height(240.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                        )
+                    }
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No image available",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+
+                if (currentItem.isSold) {
+                    Text(
+                        text = "SOLD",
+                        color = MaterialTheme.colorScheme.onError,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.error)
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                Text(
+                    text = currentItem.title,
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (displayPrice.isNotBlank()) {
+                    Text(
+                        text = displayPrice,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                Text(
+                    text = "📍 ${currentItem.location}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    AssistChip(
+                        onClick = {},
+                        label = { Text(currentItem.category) }
+                    )
+
+                    currentItem.types.forEach { type ->
+                        AssistChip(
+                            onClick = {},
+                            label = { Text(type) }
                         )
                     }
                 }
 
-                Column(modifier = Modifier.padding(16.dp)) {
+                if (currentItem.types.contains("Exchange") && currentItem.exchangeFor.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(18.dp))
 
                     Text(
-                        text = it.title,
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "₹${it.price}",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    if (it.types.contains("Rent")) {
-                        Text(
-                            text = "Rent: ₹${it.rentPrice} / ${it.rentDuration}",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    if (it.types.contains("Exchange")) {
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "🔄 Exchange For:",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-
-                        Text(it.exchangeFor)
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "📍 ${it.location}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        AssistChip(
-                            onClick = {},
-                            label = { Text(it.category) }
-                        )
-
-                        AssistChip(
-                            onClick = {},
-                            label = { Text(it.types.joinToString()) }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Divider()
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "Description",
+                        text = "Exchange For",
                         style = MaterialTheme.typography.titleMedium
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = it.description,
+                        text = currentItem.exchangeFor,
                         style = MaterialTheme.typography.bodyMedium
                     )
+                }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
+                Divider()
+                Spacer(modifier = Modifier.height(20.dp))
 
-                    Divider()
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
+                if (isOwner) {
                     Text(
-                        text = "Seller Information",
+                        text = "Manage Listing",
                         style = MaterialTheme.typography.titleMedium
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    Card(
-                        modifier = Modifier.fillMaxWidth()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(it.userName)
-                            Text(it.userEmail)
+                        OutlinedButton(
+                            onClick = {
+                                navController.navigate(
+                                    Screen.EditItem.createRoute(currentItem.id)
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Edit")
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                viewModel.deleteItem(currentItem.id)
+                                navController.popBackStack()
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Delete")
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
-                    val context = LocalContext.current
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Button(
                         onClick = {
-
-
-                            val phone = it.userPhone
-                            val message = "Hi ${it.userName}, I'm interested in your item \"${it.title}\" listed for ₹${it.price}. Is it still available?"
-
-                            val url = "https://wa.me/$phone?text=${Uri.encode(message)}"
-
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            intent.data = Uri.parse(url)
-
-                            context.startActivity(intent)
+                            viewModel.toggleSold(currentItem)
                         },
-                        enabled = !it.isSold,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp)
                     ) {
-                        Text(if (it.isSold) "Item Sold" else "Chat on WhatsApp")
+                        Text(
+                            if (currentItem.isSold) "Mark as Available" else "Mark as Sold"
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Divider()
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                Text(
+                    text = "Description",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = currentItem.description.ifBlank { "No description provided." },
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+                Divider()
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Seller Information",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(14.dp)
+                    ) {
+                        Text(
+                            text = currentItem.userName.ifBlank { "Unknown Seller" },
+                            style = MaterialTheme.typography.titleSmall
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = currentItem.userEmail,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        if (currentItem.userPhone.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = currentItem.userPhone,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = {
+                        val phone = currentItem.userPhone.trim()
+
+                        if (phone.isNotBlank()) {
+                            val message =
+                                "Hi ${currentItem.userName}, I'm interested in your item \"${currentItem.title}\". Is it still available?"
+
+                            val url = "https://wa.me/$phone?text=${Uri.encode(message)}"
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            context.startActivity(intent)
+                        }
+                    },
+                    enabled = !currentItem.isSold && currentItem.userPhone.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text(
+                        when {
+                            currentItem.isSold -> "Item Sold"
+                            currentItem.userPhone.isBlank() -> "Phone Not Available"
+                            else -> "Chat on WhatsApp"
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
 }
+
+//package com.example.unikart.presentation.detail
+//
+//import android.content.Intent
+//import android.net.Uri
+//import androidx.compose.foundation.layout.*
+//import androidx.compose.foundation.lazy.LazyRow
+//import androidx.compose.foundation.lazy.items
+//import androidx.compose.foundation.rememberScrollState
+//import androidx.compose.foundation.verticalScroll
+//import androidx.compose.material3.*
+//import androidx.compose.runtime.Composable
+//import androidx.compose.runtime.LaunchedEffect
+//import androidx.compose.ui.Alignment
+//import androidx.compose.ui.Modifier
+//import androidx.compose.ui.platform.LocalContext
+//import androidx.compose.ui.unit.dp
+//import androidx.hilt.navigation.compose.hiltViewModel
+//import androidx.navigation.NavHostController
+//import coil.compose.AsyncImage
+//import com.example.unikart.presentation.navigation.Screen
+//import com.google.firebase.auth.FirebaseAuth
+//
+//@Composable
+//fun ItemDetailsScreen(
+//    navController: NavHostController,
+//    itemId: String,
+//    viewModel: ItemDetailsViewModel = hiltViewModel()
+//) {
+//
+//    val item = viewModel.item
+//    val isLoading = viewModel.isLoading
+//
+//    LaunchedEffect(Unit) {
+//        viewModel.loadItem(itemId)
+//    }
+//
+//    val currentUser = FirebaseAuth.getInstance().currentUser
+//
+//
+//
+//    if (isLoading) {
+//        Box(
+//            modifier = Modifier.fillMaxSize(),
+//            contentAlignment = Alignment.Center
+//        ) {
+//            CircularProgressIndicator()
+//        }
+//    } else {
+//        item?.let {
+//
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .verticalScroll(rememberScrollState())
+//            ) {
+//
+//                if (item != null) {
+//                    if (currentUser?.uid == item.userId) {
+//                        Button(onClick = {
+//                            navController.navigate(
+//                                Screen.EditItem.createRoute(item.id)
+//                            )
+//                        }) { Text("Edit") }
+//
+//                        Button(
+//                            onClick = {
+//                                viewModel.deleteItem(item.id)
+//                                navController.popBackStack()
+//                            }
+//                        ) {
+//                            Text("Delete")
+//                        }
+//
+//                        Button(
+//                            onClick = {
+//                                viewModel.toggleSold(it)
+//                            },
+//                            modifier = Modifier.fillMaxWidth()
+//                        ) {
+//                            Text(if (it.isSold) "Mark as Available" else "Mark as Sold")
+//                        }
+//                    }
+//                }
+//
+//
+//                LazyRow {
+//                    items(it.imageUrls) { url ->
+//                        AsyncImage(
+//                            model = url,
+//                            contentDescription = null,
+//                            modifier = Modifier
+//                                .width(300.dp)
+//                                .height(250.dp)
+//                                .padding(8.dp)
+//                        )
+//                    }
+//                }
+//
+//                Column(modifier = Modifier.padding(16.dp)) {
+//
+//                    Text(
+//                        text = it.title,
+//                        style = MaterialTheme.typography.headlineSmall
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
+//
+//                    Text(
+//                        text = "₹${it.price}",
+//                        style = MaterialTheme.typography.titleLarge
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
+//
+//                    if (it.types.contains("Rent")) {
+//                        Text(
+//                            text = "Rent: ₹${it.rentPrice} / ${it.rentDuration}",
+//                            style = MaterialTheme.typography.titleMedium
+//                        )
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
+//
+//                    if (it.types.contains("Exchange")) {
+//                        Spacer(modifier = Modifier.height(8.dp))
+//
+//                        Text(
+//                            text = "🔄 Exchange For:",
+//                            style = MaterialTheme.typography.titleMedium
+//                        )
+//
+//                        Text(it.exchangeFor)
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
+//
+//                    Text(
+//                        text = "📍 ${it.location}",
+//                        style = MaterialTheme.typography.bodyMedium
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
+//
+//                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+//                        AssistChip(
+//                            onClick = {},
+//                            label = { Text(it.category) }
+//                        )
+//
+//                        AssistChip(
+//                            onClick = {},
+//                            label = { Text(it.types.joinToString()) }
+//                        )
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
+//
+//                    Divider()
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
+//
+//                    Text(
+//                        text = "Description",
+//                        style = MaterialTheme.typography.titleMedium
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(6.dp))
+//
+//                    Text(
+//                        text = it.description,
+//                        style = MaterialTheme.typography.bodyMedium
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(20.dp))
+//
+//                    Divider()
+//
+//                    Spacer(modifier = Modifier.height(16.dp))
+//
+//                    Text(
+//                        text = "Seller Information",
+//                        style = MaterialTheme.typography.titleMedium
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(8.dp))
+//
+//                    Card(
+//                        modifier = Modifier.fillMaxWidth()
+//                    ) {
+//                        Column(modifier = Modifier.padding(12.dp)) {
+//                            Text(it.userName)
+//                            Text(it.userEmail)
+//                        }
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(20.dp))
+//                    val context = LocalContext.current
+//
+//                    Button(
+//                        onClick = {
+//
+//
+//                            val phone = it.userPhone
+//                            val message = "Hi ${it.userName}, I'm interested in your item \"${it.title}\" listed for ₹${it.price}. Is it still available?"
+//
+//                            val url = "https://wa.me/$phone?text=${Uri.encode(message)}"
+//
+//                            val intent = Intent(Intent.ACTION_VIEW)
+//                            intent.data = Uri.parse(url)
+//
+//                            context.startActivity(intent)
+//                        },
+//                        enabled = !it.isSold,
+//                        modifier = Modifier.fillMaxWidth()
+//                    ) {
+//                        Text(if (it.isSold) "Item Sold" else "Chat on WhatsApp")
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
